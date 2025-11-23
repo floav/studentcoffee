@@ -1,14 +1,247 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>និស្សិតកាហ្វេ | Student Coffee</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>និស្សិតកាហ្វេ</title>
+
+    <!-- Google Fonts Khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 (Free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Open Sans', 'Battambang', sans-serif; background-color: #f8f5f2; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d4a373; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b08968; }
+
+        @keyframes fadein { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes fadeout { to { opacity: 0; transform: translate(-50%, 20px); } }
+    </style>
 </head>
-<body>
-  <div id="app"></div>
-  <script src="script.js"></script>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="relative h-[500px] w-full overflow-hidden bg-gray-900">
+        <div class="absolute inset-0 bg-cover bg-center opacity-60"
+             style="background-image: url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=1600');">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/90"></div>
+
+        <div class="relative z-10 flex flex-col items-center justify-center h-full text-white px-4 text-center space-y-6 pt-10 pb-16">
+
+            <!-- Logo -->
+            <!-- <div class="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 bg-white rounded-full flex items-center justify-center border-4 border-[#d4a373] mb-4 shadow-2xl overflow-hidden">
+                <img src="https://img.freepik.com/free-vector/coffee-shop-logo-design-template_1051-2856.jpg?w=740"
+                     alt="និស្សិតកាហ្វេ Logo" class="w-full h-full object-cover"
+                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/751/751621.png'">
+            </div> -->
+
+            <h1 class="text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg text-[#d4a373]">
+                និស្សិតកាហ្វេ
+            </h1>
+            <p class="text-gray-200 text-lg font-light">សួស្ដី! Welcome សូមស្វាគមន៍</p>
+
+            <!-- Info -->
+            <div class="flex flex-wrap justify-center gap-4 mt-6 text-sm">
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-3 rounded-full">
+                    <i class="fas fa-map-marker-alt text-[#d4a373]"></i>
+                    <span>នៅជាប់មាត់ទន្លេរត្បូងឃ្មុំ</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-3 rounded-full">
+                    <i class="fas fa-phone text-[#d4a373]"></i>
+                    <span>071 977 7622</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-3 rounded-full">
+                    <i class="fas fa-clock text-[#d4a373]"></i>
+                    <span>08:00AM - 08:00PM</span>
+                </div>
+                <div id="statusBadge" class="flex items-center gap-2 px-5 py-3 rounded-full font-bold">
+                    <i class="fas fa-circle text-xs"></i>
+                    <span id="statusText">Checking...</span>
+                </div>
+            </div>
+
+            <!-- Social Buttons (Font Awesome + Link ត្រឹមត្រូវ) -->
+            <div class="flex flex-wrap justify-center gap-6 mt-10">
+                <a href="https://web.facebook.com/profile.php?id=61583191186186" target="_blank"
+                   class="flex items-center gap-3 bg-[#1877F2] hover:bg-[#166fe5] text-white px-8 py-4 rounded-full text-lg font-medium transition shadow-lg hover:-translate-y-1">
+                    <i class="fab fa-facebook-f text-xl"></i>
+                    <span>និស្សិតកាហ្វេ</span>
+                </a>
+
+                <a href="https://t.me/studentcoffee_kh" target="_blank"
+                   class="flex items-center gap-3 bg-[#0088cc] hover:bg-[#0077b5] text-white px-8 py-4 rounded-full text-lg font-medium transition shadow-lg hover:-translate-y-1">
+                    <i class="fab fa-telegram-plane text-xl"></i>
+                    <span>Telegram</span>
+                </a>
+
+                <a href="https://www.tiktok.com/@studentcoffee" target="_blank"
+                   class="flex items-center gap-3 bg-black hover:bg-gray-900 text-white px-8 py-4 rounded-full text-lg font-medium transition shadow-lg border border-gray-700 hover:-translate-y-1">
+                    <i class="fab fa-tiktok text-xl"></i>
+                    <span>TikTok</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-6xl flex-grow">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 relative inline-block">
+                ម៉ឺនុយ (Menu)
+                <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-[#d4a373] rounded-full"></span>
+            </h2>
+            <p class="text-gray-600 mt-4 text-lg">ជ្រើសរើសភេសជ្ជៈដែលលោកអ្នកចូលចិត្ត</p>
+        </div>
+
+        <!-- Search -->
+        <div class="max-w-xl mx-auto mb-12">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="ស្វែងរកភេសជ្ជៈ..."
+                       class="w-full pl-14 pr-12 py-4 rounded-full border-2 border-gray-200 focus:border-[#d4a373] focus:outline-none text-lg shadow-sm">
+                <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
+                <button id="clearSearch" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 hidden">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+        <!-- No Results -->
+        <div id="noResults" class="hidden text-center py-16">
+            <i class="fas fa-coffee text-6xl text-gray-300 mb-4"></i>
+            <p class="text-xl text-gray-600">មិនមានភេសជ្ជៈសម្រាប់ "<span id="searchTermDisplay"></span>"</p>
+            <button id="resetSearchBtn" class="mt-6 text-[#d4a373] font-bold hover:underline text-lg">
+                ← បង្ហាញទាំងអស់វិញ
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-2xl font-bold text-[#d4a373] mb-3">និស្សិតកាហ្វេ</h3>
+            <p class="text-gray-400">ទំនាក់ទំនងតាមលេខទូរស័ព្ទ ឬបណ្តាញសង្គមខាងលើ</p>
+            <p class="text-sm text-gray-500 mt-6">© <span id="year"></span> និស្សិតកាហ្វេ • All rights reserved</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        const menuItems = [
+            { id: 1, name: "កាហ្វេខ្មៅទឹកដោះគោ", price: 3000, image: "https://img.sanishtech.com/u/617950ed34f75663cf0f81d0376513e2.png", category: "កាហ្វេ" },
+            { id: 2, name: "ម៉ាត់ឆាឡាតេ (Matcha Latte)", price: 3000, image: "https://img.sanishtech.com/u/d0bfb31443a4bc640aa04d585718ac82.png", category: "តែ" },
+            { id: 3, name: "កាពូជីណូ (Cappuccino)", price: 3000, image: "https://img.sanishtech.com/u/1311b2f7bb4d408eba004922e07a1db9.png", category: "កាហ្វេ" },
+            { id: 4, name: "តែជ្រក់ (Lemon Tea)", price: 3000, image: "https://img.sanishtech.com/u/2ca8cd03b37da74162176a0272e4e735.png", category: "តែ" },
+            { id: 5, name: "ម្ចូរព្រឹក (Roselle juice)", price: 3000, image: "https://img.sanishtech.com/u/804550c8c487f253095d7b8b5257b537.png", category: "តែ" },
+            { id: 6, name: "ផាសិនទឹកដោះគោ (milk passion)", price: 3000, image: "https://img.sanishtech.com/u/97aef3c835c434ed3e29e8c4005f8aae.png", category: "ផ្លែឈើ" },
+            { id: 7, name: "ស្រ្តបឺរីឡាតេ (strawberry latte)", price: 3000, image: "https://img.sanishtech.com/u/c5718db7a0e9565dd132055108c03a26.png", category: "ផ្លែឈើ" },
+            { id: 8, name: "ម៉ូកាឡាតេ (Mocha Latte)", price: 3000, image: "https://img.sanishtech.com/u/ed18a7989b220088d439b183d3a1433a.png", category: "កាហ្វេ" },
+            { id: 9, name: "កាហ្វេដូង (Coffee Coconut)", price: 3000, image: "https://img.sanishtech.com/u/1de24e8b208015b04f14aae1636db19b.png", category: "កាហ្វេ" },
+            { id: 10, name: "អាមេរិកកាណូ (Americano)", price: 3000, image: "https://img.sanishtech.com/u/b978fadd4ca14ee25689c3a030f49dd2.png", category: "កាហ្វេ" }
+        ];
+
+        const grid = document.getElementById('productGrid');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearch');
+        const noResults = document.getElementById('noResults');
+        const searchTermDisplay = document.getElementById('searchTermDisplay');
+        const resetSearchBtn = document.getElementById('resetSearchBtn');
+        const yearSpan = document.getElementById('year');
+
+        yearSpan.textContent = new Date().getFullYear();
+
+        // Toast
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:white;padding:16px 32px;border-radius:50px;font-weight:bold;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.3);animation:fadein 0.4s,fadeout 0.6s 2.4s forwards;';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        window.orderItem = () => showToast("មុខងារនេះនឹងមកដល់ឆាប់ៗ");
+
+        // Status
+        function checkShopStatus() {
+            const h = new Date().getHours();
+            const open = h >= 8 && h < 20;
+            const badge = document.getElementById('statusBadge');
+            const text = document.getElementById('statusText');
+            if (open) {
+                badge.className = "flex items-center gap-2 bg-green-600 text-white px-5 py-3 rounded-full font-bold animate-pulse";
+                text.textContent = "កំពុងបើកលក់";
+            } else {
+                badge.className = "flex items-center gap-2 bg-gray-600 text-white px-5 py-3 rounded-full font-bold";
+                text.textContent = "បានបិទ (បើកវិញថ្ងៃស្អែក)";
+            }
+        }
+
+        // Render
+        function renderItems(items) {
+            grid.innerHTML = '';
+            if (!items.length) {
+                noResults.classList.remove('hidden');
+                searchTermDisplay.textContent = searchInput.value;
+                grid.classList.add('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                grid.classList.remove('hidden');
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group";
+                    card.innerHTML = `
+                        <div class="relative overflow-hidden">
+                            <img src="${item.image}" alt="${item.name}" class="w-full h-64 object-cover group-hover:scale-110 transition duration-500"
+                                 onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
+                            <div class="absolute top-4 right-4 bg-white/90 px-4 py-2 rounded-full text-sm font-bold text-gray-700 shadow">
+                                ${item.category}
+                            </div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">${item.name}</h3>
+                            <p class="text-3xl font-extrabold text-[#d4a373] mb-4">${item.price.toLocaleString()} ៛</p>
+                            <button onclick="orderItem()" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-full font-bold text-lg transition flex items-center justify-center gap-3">
+                                <i class="fas fa-shopping-cart"></i> កម្មង់ឥឡូវនេះ
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        // Search
+        function filterItems() {
+            const term = searchInput.value.toLowerCase().trim();
+            clearSearchBtn.classList.toggle('hidden', !term);
+            const filtered = menuItems.filter(item => item.name.toLowerCase().includes(term));
+            renderItems(filtered);
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            filterItems();
+            searchInput.focus();
+        }
+
+        searchInput.addEventListener('input', filterItems);
+        clearSearchBtn.addEventListener('click', clearSearch);
+        resetSearchBtn.addEventListener('click', clearSearch);
+
+        // Init
+        renderItems(menuItems);
+        checkShopStatus();
+        setInterval(checkShopStatus, 60000);
+    </script>
 </body>
 </html>
