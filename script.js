@@ -1,6 +1,6 @@
 // ==================== ទិន្នន័យហាង ====================
 const shop = {
-  logo: "./Image/Logo/A1.jpg",
+  logo: "https://favourable-amaranth-vhazesm3c3.edgeone.app/A1.jpg",
   name: "និស្សិតកាហ្វេ",
   welcome: "សួស្តី! Welcome សូមស្វាគមន៍",
   location: "នៅមាត់ទន្លេរត្បូងឃ្មុំ",
@@ -105,4 +105,5 @@ detailView.addEventListener("click", (e) => {
   ) {
     closeDetail();
   }
+
 });
