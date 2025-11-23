@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ម្ហូប - ស្តារ កាហ្វេ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  <style>
+    body {margin:0;background:#111;color:white;font-family:'Segoe UI',sans-serif;text-align:center;padding:20px 0;}
+    .container {max-width:1100px;margin:0 auto;padding:20px;}
+    h1 {font-size:38px;margin:20px 0 10px;color:#fff;}
+    .price {font-size:32px;color:#e67e22;margin:15px 0 30px;font-weight:bold;}
+
+    /* 3 photos in a row */
+    .photos {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap:20px;
+      margin:30px auto;
+      max-width:1000px;
+    }
+    .photos img {
+      width:100%;
+      height:320px;
+      object-fit:cover;
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.7);
+      transition:transform 0.3s;
+    }
+    .photos img:hover {transform:scale(1.05);}
+
+    .back-btn {
+      display:inline-block;
+      margin:40px 0;
+      padding:15px 50px;
+      background:#e67e22;
+      color:white;
+      text-decoration:none;
+      border-radius:50px;
+      font-size:19px;
+      font-weight:bold;
+      transition:0.3s;
+    }
+    .back-btn:hover {background:#d35400;transform:scale(1.05);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="drinkName">Loading...</h1>
+    <div class="price" id="drinkPrice"></div>
+
+    <div class="photos" id="photoGallery">
+      <!-- 3 photos will be added here by JavaScript -->
+    </div>
+
+    <a href="index.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> ត្រឡប់ទៅមីនុយ
+    </a>
+  </div>
+
+  <script>
+    // Same drink list as index.html but now each drink has 3 photos
+    const drinks = [
+      {name:"តែក្រូចទឹកកក", price:"3 USD", photos:[
+        "https://images.unsplash.com/photo-1550258988-20f30f2f10c8?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1627439851860-5c1b0f9371e6?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1627439851895-1e5d6b4f2d2d?auto=format&fit=crop&q=80"
+      ]},
+      {name:"កាហ្វេខ្មៅទឹកកក", price:"3 USD", photos:[
+        "https://images.unsplash.com/photo-1554118811-1e0d4e4c6a6c?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517701604599-bb29b565aaa7?auto=format&fit=crop&q=80"
+      ]},
+      {name:"ម៉ាច់ចាឡាតេ", price:"3.5 USD", photos:[
+        "https://images.unsplash.com/photo-1578319439584-104934646668?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517251318529-6a5e9a9e5d3e?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1559526324-4b87b5e36d19?auto=format&fit=crop&q=80"
+      ]},
+      {name:"កាហ្វេសាច់ក្រូច", price:"4 USD", photos:[
+        "https://images.unsplash.com/photo-1557253000-4e1d8b5d6b6f?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1606890658317-8fc5f3c5d1d9?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1561845822-9c8d2a670480?auto=format&fit=crop&q=80"
+      ]},
+      {name:"ឡាតេក្តៅ", price:"3.5 USD", photos:[
+        "https://images.unsplash.com/photo-1570545906918-95c7d788c7be?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1512568400-d6d4d7e5e4b9?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1515823139519-0e46a9b74a16?auto=format&fit=crop&q=80"
+      ]},
+      {name:"កាពូច៊ីណូ", price:"4 USD", photos:[
+        "https://images.unsplash.com/photo-1607269874087-f908e09c21b4?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517701604599-bb29b565aaa7?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517251318529-6a5e9a9e5d3e?auto=format&fit=crop&q=80"
+      ]},
+      {name:"ម៉ូកាក្តៅ", price:"4 USD", photos:[
+        "https://images.unsplash.com/photo-1517701604599-bb29b565aaa7?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1512568400-d6d4d7e5e4b9?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&q=80"
+      ]},
+      {name:"ផ្លែឈើស្រស់ទឹកកក", price:"3.5 USD", photos:[
+        "https://images.unsplash.com/photo-1517959055456-9ad344a2b395?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1561845486-2eb3e9d7e2f4?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1515823139519-0e46a9b74a16?auto=format&fit=crop&q=80"
+      ]},
+      {name:"អេសប្រេសសូ", price:"2.5 USD", photos:[
+        "https://images.unsplash.com/photo-1607269874087-f908e09c21b4?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517701604599-bb29b565aaa7?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1570545906918-95c7d788c7be?auto=format&fit=crop&q=80"
+      ]},
+      {name:"នមសឺរ៉ាមទឹកកក", price:"3.5 USD", photos:[
+        "https://images.unsplash.com/photo-1561845486-2eb3e9d7e2f4?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517251318529-6a5e9a9e5d3e?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1559526324-4b87b5e36d19?auto=format&fit=crop&q=80"
+      ]},
+      {name:"ឆូកូឡាក្តៅ", price:"4 USD", photos:[
+        "https://images.unsplash.com/photo-1591019534968-3f9445b8e3b8?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1517701604599-bb29b565aaa7?auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&q=80"
+      ]}
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = parseInt(urlParams.get('id'));
+
+    if (drinks[id]) {
+      const drink = drinks[id];
+      document.getElementById("drinkName").textContent = drink.name;
+      document.getElementById("drinkPrice").textContent = drink.price;
+
+      const gallery = document.getElementById("photoGallery");
+      drink.photos.forEach(photo => {
+        const img = document.createElement("img");
+        img.src = photo;
+        img.alt = drink.name;
+        gallery.appendChild(img);
+      });
+    }
+  </script>
+</body>
+</html>
