@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>និស្សិតកាហ្វេ - Student Coffee Order</title>
+
+    <!-- Google Fonts Khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Open Sans', 'Battambang', sans-serif; background-color: #f8f5f2; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow: hidden; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d4a373; border-radius: 4px; }
+        
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #d4a373;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in-up { animation: fadeIn 0.3s ease-out; }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <!-- Navbar / Header -->
+    <header class="bg-gray-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#d4a373] rounded-full flex items-center justify-center text-gray-900 font-bold shadow-inner">
+                    <i class="fas fa-coffee"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-wide text-[#d4a373]">និស្សិតកាហ្វេ</h1>
+            </div>
+            
+            <!-- Cart Button -->
+            <button onclick="openCart()" class="relative p-2 text-white hover:text-[#d4a373] transition group">
+                <div class="bg-gray-800 p-2 rounded-full group-hover:bg-gray-700 transition">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                </div>
+                <span id="cartCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-gray-900 hidden">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl flex-grow">
+        
+        <!-- Search -->
+        <div class="mb-8 relative max-w-md mx-auto">
+            <input type="text" id="searchInput" placeholder="ស្វែងរកភេសជ្ជៈ..."
+                   class="w-full pl-12 pr-10 py-3 rounded-full border border-gray-300 focus:border-[#d4a373] focus:ring-2 focus:ring-[#d4a373]/50 focus:outline-none shadow-sm transition">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <button id="clearSearch" class="hidden absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Items injected via JS -->
+        </div>
+
+        <div id="noResults" class="hidden text-center py-12 flex flex-col items-center">
+            <i class="fas fa-mug-hot text-6xl text-gray-200 mb-4"></i>
+            <p class="text-gray-500 text-lg">មិនមានភេសជ្ជៈនេះទេ</p>
+            <button onclick="clearSearchInput()" class="mt-4 text-[#d4a373] hover:underline">បង្ហាញទាំងអស់</button>
+        </div>
+    </main>
+
+    <!-- 1. CUSTOMIZE DRINK MODAL -->
+    <div id="customizeModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeCustomizeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute bottom-0 left-0 right-0 md:relative md:inset-auto md:w-full md:max-w-md md:mx-auto md:mt-20 md:rounded-2xl bg-white rounded-t-2xl shadow-2xl overflow-hidden animate-slide-up md:animate-fade-in">
+            
+            <!-- Image Header -->
+            <div class="relative h-48 bg-gray-100">
+                <img id="modalImg" src="" class="w-full h-full object-cover">
+                <button onclick="closeCustomizeModal()" class="absolute top-3 right-3 bg-black/30 hover:bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <h2 id="modalName" class="text-2xl font-bold text-white shadow-sm">Product Name</h2>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-6">
+                
+                <div class="flex justify-between items-center border-b pb-4">
+                    <span class="text-gray-600 font-medium">តម្លៃធម្មតា</span>
+                    <span id="modalBasePrice" class="text-xl font-bold text-[#d4a373]">3000 ៛</span>
+                </div>
+
+                <!-- Size -->
+                <div>
+                    <label class="block text-gray-800 font-bold mb-3"><i class="fas fa-expand text-[#d4a373] mr-2"></i>ទំហំ (Size)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="size" value="S" class="peer sr-only" checked onchange="calculateModalTotal()">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center peer-checked:border-[#d4a373] peer-checked:bg-[#d4a373]/10 transition hover:bg-gray-50">
+                                <div class="font-bold text-gray-800">តូច (S)</div>
+                                <div class="text-xs text-gray-500 mt-1">ធម្មតា</div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-[#d4a373] opacity-0 peer-checked:opacity-100 transition"><i class="fas fa-check-circle"></i></div>
+                        </label>
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="size" value="L" class="peer sr-only" onchange="calculateModalTotal()">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center peer-checked:border-[#d4a373] peer-checked:bg-[#d4a373]/10 transition hover:bg-gray-50">
+                                <div class="font-bold text-gray-800">ធំ (L)</div>
+                                <div class="text-xs text-gray-500 mt-1">+1000 ៛</div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-[#d4a373] opacity-0 peer-checked:opacity-100 transition"><i class="fas fa-check-circle"></i></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sugar (UPDATED: Free-form slider) -->
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="block text-gray-800 font-bold"><i class="fas fa-cubes text-[#d4a373] mr-2"></i>កម្រិតស្ករ (Sugar)</label>
+                        <span id="sugarValue" class="text-[#d4a373] font-bold bg-[#d4a373]/10 px-2 rounded">100%</span>
+                    </div>
+                    <input type="range" id="sugarRange" min="0" max="100" step="1" value="100" 
+                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                           oninput="document.getElementById('sugarValue').innerText = this.value + '%'">
+                    <div class="flex justify-between text-xs text-gray-400 mt-2 font-medium">
+                        <span>គ្មានស្ករ (0%)</span><span>ស្ករធម្មតា (100%)</span>
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
+                    <span class="font-bold text-gray-700">ចំនួន (Quantity)</span>
+                    <div class="flex items-center gap-4">
+                        <button onclick="adjustQty(-1)" class="w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-100 transition"><i class="fas fa-minus"></i></button>
+                        <span id="modalQty" class="font-bold text-xl w-6 text-center text-gray-800">1</span>
+                        <button onclick="adjustQty(1)" class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-gray-700 transition"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Add Button -->
+                <button onclick="addToCart()" class="w-full bg-[#d4a373] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-[#b08968] active:scale-[0.98] transition flex justify-between px-6 items-center">
+                    <span><i class="fas fa-cart-plus mr-2"></i> បញ្ចូលកន្ត្រក</span>
+                    <span id="modalTotalPrice" class="bg-black/20 px-3 py-1 rounded-lg">3000 ៛</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. CART SIDEBAR -->
+    <div id="cartModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeCart()"></div>
+        
+        <div id="cartPanel" class="absolute inset-y-0 right-0 w-full max-w-md bg-white flex flex-col shadow-2xl transform translate-x-full transition-transform duration-300">
+            
+            <!-- Header -->
+            <div class="bg-gray-900 text-white p-4 flex justify-between items-center shadow-md">
+                <h2 class="text-xl font-bold"><i class="fas fa-shopping-basket mr-2"></i> កន្ត្រកទំនិញ</h2>
+                <button onclick="closeCart()" class="text-gray-400 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+
+            <!-- Items -->
+            <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                <!-- Items injected here -->
+            </div>
+
+            <!-- Footer -->
+            <div class="border-t bg-white p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-gray-600 font-medium">សរុបទាំងអស់ (Grand Total)</span>
+                    <span id="cartGrandTotal" class="text-2xl font-bold text-[#d4a373]">0 ៛</span>
+                </div>
+                <button onclick="showCheckoutForm()" id="btnCheckout" disabled 
+                        class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex justify-center items-center gap-2">
+                    <span>បន្តទៅការទូទាត់</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CHECKOUT FORM -->
+    <div id="checkoutModal" class="fixed inset-0 z-[60] hidden overflow-y-auto">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeCheckout()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            
+            <!-- FORM SUBMIT USES FORMSUBMIT.CO -->
+            <form id="orderForm" action="https://formsubmit.co/thoeunthary6@gmail.com" method="POST" enctype="multipart/form-data" class="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative p-6 animate-fade-in-up">
+                
+                <!-- REQUIRED FOR FORMSUBMIT: Add a redirect URL for success -->
+                <input type="hidden" name="_next" value="https://formsubmit.co/thankyou.html">
+                <!-- REQUIRED FOR FORMSUBMIT: Subject line for the email -->
+                <input type="hidden" name="_subject" id="formSubject" value="NEW COFFEE ORDER!">
+                
+                <!-- Cart Data (Hidden Fields) -->
+                <input type="hidden" name="Order_Summary" id="orderSummaryInput">
+                <input type="hidden" name="Total_Payment_Riel" id="totalPaymentInput">
+
+                <button type="button" onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                
+                <h2 class="text-2xl font-bold text-gray-800 mb-1">ព័ត៌មានការកម្មង់</h2>
+                <p class="text-sm text-gray-500 mb-6">សូមបំពេញព័ត៌មានឪ្យបានត្រឹមត្រូវដើម្បីដឹកជញ្ជូនទៅកាន់ទីតាំងរបស់លោកអ្នក</p>
+
+                <div class="space-y-4">
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">ឈ្មោះ (Name) *</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" name="Name" id="custName" required class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 focus:ring-2 focus:ring-[#d4a373] focus:border-[#d4a373] outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">លេខទូរស័ព្ទ (Phone) *</label>
+                        <div class="relative">
+                            <i class="fas fa-phone absolute left-3 top-3 text-gray-400"></i>
+                            <input type="tel" name="Phone_Number" id="custPhone" required class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 focus:ring-2 focus:ring-[#d4a373] focus:border-[#d4a373] outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">ទីតាំង (Location) *</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-grow">
+                                <i class="fas fa-map-pin absolute left-3 top-3 text-gray-400"></i>
+                                <textarea name="Delivery_Location" id="custLocation" required rows="2" placeholder="ផ្ទះលេខ, ផ្លូវ..." class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#d4a373] outline-none text-sm"></textarea>
+                            </div>
+                            <button type="button" onclick="getLocation()" class="bg-blue-50 text-blue-600 px-4 rounded-lg hover:bg-blue-100 transition border border-blue-200 flex flex-col items-center justify-center text-xs font-bold w-24">
+                                <i class="fas fa-location-crosshairs text-lg mb-1"></i>
+                                Current
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payment Section -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
+                        <div class="text-center mb-3">
+                            <p class="text-sm font-bold text-gray-600">Scan KHQR ដើម្បីបង់ប្រាក់ (THOEUN THARY) </p>
+                            <div class="text-2xl font-bold text-[#d4a373] my-1" id="paymentTotalDisplay">0 ៛</div>
+                        </div>
+                        
+                        <!-- Placeholder QR - Replace src with your KHQR image -->
+                        <div class="w-32 h-32 bg-white mx-auto border p-2 rounded mb-4">
+                            <img src="https://img.sanishtech.com/u/051ce2938383fd06a81e22905c5d4c49.jpg" alt="KHQR" class="w-full h-full object-contain">
+                        </div>
+
+                        <label class="block text-sm font-bold text-gray-700 mb-1">វិក្កយបត្រ (Upload Payment) *</label>
+                        <!-- FormSubmit can handle the file upload, the key needs to match the desired label in the email -->
+                        <input type="file" name="Payment_Image" id="custPaymentImg" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#d4a373] file:text-white hover:file:bg-[#b08968] cursor-pointer">
+                        <p class="text-[10px] text-gray-400 mt-1 italic">* FormSubmit នឹងផ្ញើរូបភាពនេះតាម Email</p>
+                    </div>
+
+                    <button type="submit" id="submitBtn" onclick="prepareFormSubmit()" class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-green-700 transition flex justify-center items-center gap-2">
+                        <span>បញ្ជាក់ការកម្មង់ (Submit)</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. SUCCESS MESSAGE (FormSubmit redirects here using JS history manipulation) -->
+    <div id="successModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center px-4">
+        <div class="bg-black/80 fixed inset-0 backdrop-blur-sm"></div>
+        <div class="bg-white p-8 rounded-3xl shadow-2xl relative z-10 text-center max-w-sm w-full animate-bounce-in">
+            <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">ជោគជ័យ!</h3>
+            <p class="text-gray-600 mb-6">សូមរង់ចាំ Admin ត្រួតពិនិត្យ...<br>(Wait admin checking)</p>
+            <button onclick="window.location.reload()" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">បិទ (Close)</button>
+        </div>
+    </div>
+
+    <!-- FOOTER (UPDATED: Contact Info & Store Status) -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <h4 class="text-xl font-bold mb-4 text-[#d4a373]">ព័ត៌មានទំនាក់ទំនង</h4>
+
+            <!-- Contact Info -->
+            <div class="text-gray-300 space-y-2 mb-6 text-sm">
+                <p><i class="fas fa-map-marker-alt w-5 text-[#d4a373]"></i> <span class="font-bold text-white">ទីតាំង:</span> នៅមាត់ទន្លេរត្បូងឃ្មុំ</p>
+                <p><i class="fas fa-phone w-5 text-[#d4a373]"></i> <span class="font-bold text-white">ទូរស័ព្ទ:</span> 071 977 7622</p>
+                
+                <!-- Operating Hours (Dynamic) -->
+                <p id="storeHours" class="text-center"><i class="fas fa-clock w-5 text-[#d4a373]"></i> កំពុងផ្ទុកម៉ោង...</p>
+            </div>
+
+            <!-- Social Media Icons -->
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="https://web.facebook.com/profile.php?id=61583191186186" target="_blank" class="text-gray-400 hover:text-blue-600 transition text-2xl" aria-label="Facebook">
+                    <i class="fab fa-facebook-square"></i>
+                </a>
+                <a href="https://www.tiktok.com/@studentcoffee" target="_blank" class="text-gray-400 hover:text-black transition text-2xl" aria-label="TikTok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="tel:0719777622" class="text-gray-400 hover:text-green-500 transition text-2xl" aria-label="Phone">
+                    <i class="fas fa-phone-square-alt"></i>
+                </a>
+                <a href="https://t.me/studentcoffee_kh" target="_blank" class="text-gray-400 hover:text-blue-400 transition text-2xl" aria-label="Telegram Channel">
+                    <i class="fab fa-telegram"></i>
+                </a>
+            </div>
+
+            <p class="text-gray-400 text-sm border-t border-gray-700 pt-4">© <span id="year"></span> និស្សិតកាហ្វេ. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // 1. DATA
+        // ==========================================
+        const menuItems = [
+            { id: 1, name: "កាហ្វេខ្មៅទឹកដោះគោ", price: 3000, image: "https://img.sanishtech.com/u/617950ed34f75663cf0f81d0376513e2.png", category: "កាហ្វេ" },
+            { id: 2, name: "ម៉ាត់ឆាឡាតេ (Matcha)", price: 3000, image: "https://img.sanishtech.com/u/d0bfb31443a4bc640aa04d585718ac82.png", category: "តែ" },
+            { id: 3, name: "កាពូជីណូ (Cappuccino)", price: 3000, image: "https://img.sanishtech.com/u/1311b2f7bb4d408eba004922e07a1db9.png", category: "កាហ្វេ" },
+            { id: 4, name: "តែជ្រក់ (Lemon Tea)", price: 3000, image: "https://img.sanishtech.com/u/2ca8cd03b37da74162176a0272e4e735.png", category: "តែ" },
+            { id: 5, name: "ម្ចូរព្រឹក (Roselle)", price: 3000, image: "https://img.sanishtech.com/u/804550c8c487f253095d7b8b5257b537.png", category: "តែ" },
+            { id: 6, name: "ផាសិនទឹកដោះគោ", price: 3000, image: "https://img.sanishtech.com/u/97aef3c835c434ed3e29e8c4005f8aae.png", category: "ផ្លែឈើ" },
+            { id: 7, name: "ស្រ្តបឺរីឡាតេ", price: 3000, image: "https://img.sanishtech.com/u/c5718db7a0e9565dd132055108c03a26.png", category: "ផ្លែឈើ" },
+            { id: 8, name: "ម៉ូកាឡាតេ (Mocha)", price: 3000, image: "https://img.sanishtech.com/u/ed18a7989b220088d439b183d3a1433a.png", category: "កាហ្វេ" },
+            { id: 9, name: "កាហ្វេដូង (Coconut)", price: 3000, image: "https://img.sanishtech.com/u/1de24e8b208015b04f14aae1636db19b.png", category: "កាហ្វេ" },
+            { id: 10, name: "អាមេរិកកាណូ (Americano)", price: 3000, image: "https://img.sanishtech.com/u/b978fadd4ca14ee25689c3a030f49dd2.png", category: "កាហ្វេ" }
+        ];
+
+        let cart = [];
+        let currentItem = null; 
+        let currentQty = 1;
+
+        // ==========================================
+        // 2. UI RENDER & SEARCH
+        // ==========================================
+        const grid = document.getElementById('productGrid');
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+
+        function renderItems(items) {
+            grid.innerHTML = '';
+            if (!items.length) {
+                document.getElementById('noResults').classList.remove('hidden');
+                grid.classList.add('hidden');
+            } else {
+                document.getElementById('noResults').classList.add('hidden');
+                grid.classList.remove('hidden');
+                items.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = "bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100 flex flex-col group";
+                    el.innerHTML = `
+                        <div class="relative h-48 overflow-hidden bg-gray-50 p-4 flex items-center justify-center">
+                            <img src="${item.image}" class="h-full object-contain transform group-hover:scale-110 transition duration-500 drop-shadow-lg" 
+                                 onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                            <span class="absolute top-3 right-3 bg-white/90 px-2 py-1 text-[10px] font-bold rounded shadow text-gray-600 uppercase tracking-wider">${item.category}</span>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg mb-1">${item.name}</h3>
+                                <p class="text-[#d4a373] font-bold text-xl">${item.price.toLocaleString()} ៛</p>
+                            </div>
+                            <button onclick="openCustomizeModal(${item.id})" class="mt-4 w-full bg-gray-50 text-gray-800 border border-gray-200 py-3 rounded-xl font-bold text-sm hover:bg-[#d4a373] hover:text-white hover:border-[#d4a373] transition flex items-center justify-center gap-2 group-hover:bg-[#d4a373] group-hover:text-white group-hover:border-[#d4a373]">
+                                <i class="fas fa-plus"></i> កម្មង់ (Add)
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(el);
+                });
+            }
+        }
+
+        function filterItems() {
+            const term = searchInput.value.toLowerCase().trim();
+            clearBtn.classList.toggle('hidden', !term);
+            const filtered = menuItems.filter(i => i.name.toLowerCase().includes(term));
+            renderItems(filtered);
+        }
+
+        function clearSearchInput() {
+            searchInput.value = '';
+            filterItems();
+        }
+
+        searchInput.addEventListener('input', filterItems);
+        clearBtn.addEventListener('click', clearSearchInput);
+
+        // ==========================================
+        // 3. CUSTOMIZE LOGIC
+        // ==========================================
+        const modal = document.getElementById('customizeModal');
+
+        function openCustomizeModal(id) {
+            currentItem = menuItems.find(i => i.id === id);
+            currentQty = 1;
+
+            // Reset UI
+            document.getElementById('modalImg').src = currentItem.image;
+            document.getElementById('modalName').textContent = currentItem.name;
+            document.getElementById('modalBasePrice').textContent = currentItem.price.toLocaleString() + ' ៛';
+            document.getElementById('sugarRange').value = 100;
+            document.getElementById('sugarValue').textContent = "100%";
+            
+            // Select Size S
+            const radioS = document.querySelector('input[name="size"][value="S"]');
+            if(radioS) radioS.checked = true;
+            
+            document.getElementById('modalQty').innerText = 1;
+
+            calculateModalTotal();
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeCustomizeModal() {
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        function adjustQty(change) {
+            if (currentQty + change > 0) {
+                currentQty += change;
+                document.getElementById('modalQty').innerText = currentQty;
+                calculateModalTotal();
+            }
+        }
+
+        function calculateModalTotal() {
+            const sizeEl = document.querySelector('input[name="size"]:checked');
+            const size = sizeEl ? sizeEl.value : 'S';
+            
+            let price = currentItem.price;
+            if (size === 'L') price += 1000; 
+
+            const total = price * currentQty;
+            document.getElementById('modalTotalPrice').innerText = total.toLocaleString() + ' ៛';
+            return total;
+        }
+
+        // ==========================================
+        // 4. CART LOGIC
+        // ==========================================
+        function addToCart() {
+            const sizeEl = document.querySelector('input[name="size"]:checked');
+            const size = sizeEl ? sizeEl.value : 'S';
+            const sugar = document.getElementById('sugarRange').value + '%';
+            
+            let unitPrice = currentItem.price;
+            if(size === 'L') unitPrice += 1000;
+
+            const totalItemPrice = unitPrice * currentQty;
+
+            const cartItem = {
+                id: Date.now(),
+                name: currentItem.name,
+                price: unitPrice,
+                size: size,
+                sugar: sugar,
+                qty: currentQty,
+                total: totalItemPrice
+            };
+
+            cart.push(cartItem);
+            updateCartUI();
+            closeCustomizeModal();
+            
+            // Animation for Cart Icon
+            const cartBadge = document.getElementById('cartCount');
+            cartBadge.classList.add('scale-125');
+            setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
+        }
+
+        function updateCartUI() {
+            // Update Badge
+            const countBadge = document.getElementById('cartCount');
+            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+            countBadge.innerText = totalQty;
+            countBadge.classList.toggle('hidden', cart.length === 0);
+
+            // Update List
+            const container = document.getElementById('cartItemsContainer');
+            const checkoutBtn = document.getElementById('btnCheckout');
+            const grandTotalEl = document.getElementById('cartGrandTotal');
+
+            container.innerHTML = '';
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 mt-20 flex flex-col items-center">
+                        <i class="fas fa-shopping-basket text-5xl mb-3 opacity-20"></i>
+                        <p>កន្ត្រកនៅទំនេរ</p>
+                    </div>`;
+                checkoutBtn.disabled = true;
+                grandTotalEl.innerText = "0 ៛";
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+            let grandTotal = 0;
+
+            cart.forEach((item, index) => {
+                grandTotal += item.total;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-start bg-white p-3 rounded-xl border border-gray-100 shadow-sm";
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 text-sm">${item.name} <span class="text-xs bg-gray-100 px-1 rounded ml-1">${item.size}</span></h4>
+                        <div class="text-xs text-gray-500 mt-1 space-x-2">
+                            <span><i class="fas fa-cube text-[#d4a373]"></i> ${item.sugar}</span>
+                            <span><i class="fas fa-times text-[#d4a373]"></i> ${item.qty}</span>
+                        </div>
+                        <div class="text-[#d4a373] font-bold mt-1 text-sm">${item.total.toLocaleString()} ៛</div>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-gray-300 hover:text-red-500 transition p-2">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+
+            grandTotalEl.innerText = grandTotal.toLocaleString() + " ៛";
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // Side Panel Animation
+        function openCart() {
+            document.getElementById('cartModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('cartPanel').classList.remove('translate-x-full');
+            }, 10);
+        }
+
+        function closeCart() {
+            document.getElementById('cartPanel').classList.add('translate-x-full');
+            setTimeout(() => {
+                document.getElementById('cartModal').classList.add('hidden');
+            }, 300);
+        }
+
+        // ==========================================
+        // 5. CHECKOUT & FORMSUBMIT LOGIC
+        // ==========================================
+        function showCheckoutForm() {
+            closeCart();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+            
+            // Update Price Display on Checkout
+            let total = cart.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('paymentTotalDisplay').innerText = total.toLocaleString() + " ៛";
+
+            // Prepare hidden fields for FormSubmit
+            prepareFormSubmit();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function getLocation() {
+            const locInput = document.getElementById('custLocation');
+            const originalPlaceholder = locInput.placeholder;
+            locInput.placeholder = "កំពុងចាប់ទីតាំង (Getting location)...";
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        // Create Google Maps Link
+                        locInput.value = `https://www.google.com/maps?q=${lat},${lng} (Auto-Detected)`;
+                    },
+                    (error) => {
+                        // Use modal/custom message instead of alert()
+                        console.error("Geolocation failed:", error);
+                        locInput.placeholder = originalPlaceholder;
+                    }
+                );
+            } else {
+                // Use modal/custom message instead of alert()
+                console.warn("Geolocation not supported.");
+            }
+        }
+        
+        function prepareFormSubmit() {
+            let orderText = "--- ITEMS ---\n";
+            let grandTotal = 0;
+            cart.forEach((item, index) => {
+                grandTotal += item.total;
+                orderText += `${index + 1}. ${item.name} | Size: ${item.size} | Sugar: ${item.sugar} | Qty: ${item.qty} | Unit Price: ${item.price.toLocaleString()}៛ | Total: ${item.total.toLocaleString()}៛\n`;
+            });
+            orderText += "\n--- END ORDER ---";
+
+            // Set hidden form fields before submission
+            document.getElementById('orderSummaryInput').value = orderText;
+            document.getElementById('totalPaymentInput').value = grandTotal.toLocaleString() + " ៛";
+            document.getElementById('formSubject').value = `NEW ORDER - ${document.getElementById('custName').value || 'Guest'} (${grandTotal.toLocaleString()}៛)`;
+
+            // FormSubmit will handle the submission and redirection to the thank you page.
+            // We use the 'window.location.hash' to track the success state
+            // and show the success modal instantly on return.
+            const successUrl = window.location.href.split('#')[0] + "#order-success";
+            document.querySelector('input[name="_next"]').value = successUrl;
+        }
+
+        // ==========================================
+        // 6. HISTORY CHECK & STORE STATUS
+        // ==========================================
+        
+        // Check for success hash after FormSubmit redirect
+        function checkUrlHash() {
+            if (window.location.hash === '#order-success') {
+                // Remove the hash to prevent re-triggering on reload
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+                
+                // Show the success modal immediately
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+        }
+        
+        // New function to update store open/closed status
+        function updateStoreStatus() {
+            const hoursEl = document.getElementById('storeHours');
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // Hours: 08:00 AM to 08:00 PM (20:00)
+            const openHour = 8;
+            const closeHour = 20;
+            const standardHours = '08:00AM - 08:00PM ជារៀងរាល់ថ្ងៃ';
+
+            if (hour >= openHour && hour < closeHour) {
+                // Open
+                hoursEl.innerHTML = `<i class="fas fa-clock w-5 text-[#d4a373]"></i> <span class="font-bold text-white">ម៉ោងធ្វើការ:</span> ${standardHours} <span class="text-green-400 font-bold">បើក</span>`;
+                hoursEl.classList.remove('text-red-400');
+            } else {
+                // Closed
+                hoursEl.innerHTML = `<i class="fas fa-clock w-5 text-[#d4a373]"></i> <span class="font-bold text-white">ម៉ោងធ្វើការ:</span> ${standardHours} <span class="text-red-400 font-bold">បានសម្រាក (បើកវិញនៅថ្ងៃស្អែក)</span>`;
+            }
+        }
+
+        window.onload = function() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            renderItems(menuItems);
+            checkUrlHash(); 
+            updateStoreStatus(); // Call the new store status function
+        };
+
+    </script>
+</body>
+</html>
